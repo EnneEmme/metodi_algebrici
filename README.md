@@ -46,7 +46,11 @@ $x = x_0 + x_kk$ con $k \in \mathbb{Z}$
 
 ## Teorema cinese del resto
 
-$$\left\{ \begin{array}{rcl} x \equiv b_1 \ mod \ n_1 \\ x \equiv b_2 \ mod \ n_2 \\ x \equiv b_3 \ mod \ n_3 \\ \end{array}\right.$$
+$$\left\{\begin{array}{rcl} 
+x \equiv b_1 \ mod \ n_1 \\ 
+x \equiv b_2 \ mod \ n_2 \\ 
+x \equiv b_3 \ mod \ n_3 \\ 
+\end{array}\right.$$
 
 ``` python
 teorema_cinese_del_resto(b1, n1, b2, n2, b3, n3)
