@@ -107,8 +107,8 @@ def equazione_diofantea(a, b, c, printable=True):
     MCD, store = algoritmo_di_euclide(a, b,printable)
     if c % MCD != 0:
         if printable:
-            print(f"{c} non è divisibile per l'MCD di {a} e {b} ({MCD=})")
-        return [-1, -1]
+            print(f"{c} non e' divisibile per l'MCD di {a} e {b} ({MCD=})")
+        return [-1, -1, -1, -1]
 
     x, y = identita_di_bezout(a, b, store,printable)
 
@@ -135,6 +135,9 @@ def equazione_diofantea(a, b, c, printable=True):
             print(f"yk = {x0} + {-yk}k\n")
         return y0 ,x0, xk, -yk
 
+def not_valid_equation(x0, y0, xk, yk):
+    return x0 == -1 and y0 == -1 and xk == -1 and yk == -1
+
 def congruenza_lineare_modulo(a, b, n, printable=True):
     if printable:
         print("Congruenza modulo n")
@@ -143,6 +146,9 @@ def congruenza_lineare_modulo(a, b, n, printable=True):
     if b > n:
         b = b % n
     x0, y0, xk, yk = equazione_diofantea(a, n, b, printable)
+    if not_valid_equation(x0, y0, xk, yk):
+        return
+
     if printable:
         print(f"x = {x0} + {-yk}k")
     return x0, -yk
@@ -257,6 +263,5 @@ if __name__ == "__main__":
 # - finisci n_per_phi_uguale_a()
 # - RSA
 # - quadrati_ripetuti
-# - BUG: sistema errore con equazione_diofantea qunado non è divisbile
 # - scrivi meglio quando stampi soluzione (creare una classe apposita?)
 # - creare file utils
