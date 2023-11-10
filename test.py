@@ -1,10 +1,7 @@
 import unittest
 
 from utils import *
-from metodi import *
-
-
-
+from methods import *
 
 class TestEuclideanAlgorithm(unittest.TestCase):
 

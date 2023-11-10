@@ -62,67 +62,57 @@ def bezout_identity(a, b,printable=True,store={}):
 
     write_solution(printable, Writer.BEZOUT, store, a, b)
 
-    last_line = store[ list(store.keys())[-2]]["ib"]
+    last_line = store[list(store.keys())[-2]]["ib"]
 
     if a < b: return last_line["b"], last_line["a"]
     else:     return last_line["a"], last_line["b"]
 
-def equazione_diofantea(a, b, c, printable=True):
-    MCD, store = euclidean_algorithm(a, b,printable)
-    if c % MCD != 0:
-        if printable:
-            print(f"{c} non e' divisibile per l'MCD di {a} e {b} ({MCD=})")
+def linear_diophantine_equation(a, b, c, printable=True):
+    gcd, store = euclidean_algorithm(a, b,printable)
+    if c % gcd != 0:
+        write_solution(printable, Writer.DIOPHANTINE_ERR, a, b, c, gcd)
         return [-1, -1, -1, -1]
 
     x, y = bezout_identity(a, b,printable,store)
 
-    multi = int(c / MCD)
+    multi = int(c / gcd)
 
-    xk = int(a / MCD)
-    yk = int(b / MCD)
+    xk = int(a / gcd)
+    yk = int(b / gcd)
+    x0, y0 = x * multi, y * multi
 
-    if printable:
-        print("\nEquazione Diofantea")
     if a > b:
-        x0, y0 = x * multi, y * multi
-        if printable:
-            print(f"\n{c} = {a} • {x0} + {b} • {y0}")
-            print(f"xk = {x0} + {yk}k")
-            print(f"yk = {y0} + {-xk}k")
-        return x0,y0, yk, -xk
-
+        x0, y0, xk, yk = x0, y0, yk, -xk
     else:
-        x0, y0 = x * multi, y * multi
-        if printable:
-            print(f"\n{c} = {x0} • {b} + {y0} • {a}")
-            print(f"xk = {y0} + {xk}k")
-            print(f"yk = {x0} + {-yk}k\n")
-        return y0 ,x0, xk, -yk
+        x0, y0, xk, yk = y0, x0, yk, -xk
 
-def congruenza_lineare_modulo(a, b, n, printable=True):
-    if printable:
-        print("Congruenza modulo n")
+    write_solution(printable, Writer.DIOPHANTINE, a, b, c, x0, y0, xk, yk)
+
+    return x0, y0, xk, yk
+
+def linear_congruence(a, b, n, printable=True):
     if a > n:
         a = a % n
     if b > n:
         b = b % n
-    x0, y0, xk, yk = equazione_diofantea(a, n, b, printable)
+    x0, y0, xk, yk = linear_diophantine_equation(a, n, b, printable)
     if not_valid_equation(x0, y0, xk, yk):
-        return
+        write_solution(printable, Writer.CONGRUENCE_ERR, a, b, n)
+    else:
+        write_solution(printable, Writer.CONGRUENCE, a, b, n, x0, xk)
 
-    if printable:
-        print(f"x = {x0} + {-yk}k")
-    return x0, -yk
+    return x0, xk
 
-def invertibile(n):
+def invertible(n):
     return [num for num in range(1,n) if is_coprime(num,n)]
 
 def phi(num,printable=True):
+    n = num
     factor = {}
     divisor = 2;
-    while num > 1:
-        if num % divisor == 0:
-            num = num/divisor
+    while n > 1:
+        if n % divisor == 0:
+            n = n/divisor
             if divisor in factor:
                 factor[divisor] = factor[divisor]+1
             else:
@@ -131,70 +121,70 @@ def phi(num,printable=True):
             divisor += 1
             while not is_prime(divisor):
                 divisor += 1
+
     result = 1
     for base, exponent in factor.items():
-        print(f"{base} exp {exponent}")
         result *= base**(exponent-1)*(base-1)
+
+    write_solution(printable, Writer.PHI, num, factor, result)
 
     return result
 
-def teorema_cinese_del_resto(b1, n1, b2, n2, b3, n3,cong_printable=False,printable=True):
-    N = n1 * n2 * n3
-    N1 = n2 * n3
-    N2 = n1 * n3
-    N3 = n1 * n2
-    y1,_ = congruenza_lineare_modulo(N1, 1, n1, cong_printable)
-    y2,_ = congruenza_lineare_modulo(N2, 1, n2, cong_printable)
-    y3,_ = congruenza_lineare_modulo(N3, 1, n3, cong_printable)
+def chinese_remainder_theorem(b_list, n_list, congruence_printable=False, printable=True):
+    N_list, y_list = [], []
+    bigN = 1
 
-    if printable:
-        print(f"N_1 * y_1 * b_1 = {N1} * {y1} * {b1}")
-        print(f"N_2 * y_2 * b_2 = {N2} * {y2} * {b2}")
-        print(f"N_3 * y_3 * b_3 = {N3} * {y3} * {b3}")
+    for i, n in enumerate(n_list):
+        bigN *= n
+        tmp_N = 1
+        for j, n in enumerate(n_list):
+            if i == j:
+                continue
+            tmp_N *= n
+        N_list.append(tmp_N)
 
-    c = N1 * y1 * b1 + N2 * y2 * b2 + N3 * y3 * b3
+    for i in range(len(n_list)):
+        y, _ = linear_congruence(N_list[i], 1, n_list[i], congruence_printable)
+        y_list.append(y)
 
-    if printable:
-        print(f"x = {c} + {N}Z")
+    c = sum(N_list[i] * y_list[i] * b_list[i] for i in range(len(n_list)))
+
+    old_c = c
 
     if c < 0:
         while c < 0:
-            c += N
+            c += bigN
     else:
-        while c > N:
-            c -= N
+        while c > bigN:
+            c -= bigN
 
-    if printable:
-        print(f"minimum positive number = {c}")
+    write_solution(printable, Writer.CHINESE, n_list, N_list, y_list, b_list, old_c, c, bigN)
 
-
-def n_per_phi_uguale_a(phi, printable=True):
+def n_for_phi_equal_to(phi, printable=True):
+    # TODO: finish and add writer
     dividers = dividers(phi, printable)
     successor = prime_successor(dividers, printable)
 
     n_possible_value = []
 
-def quadrati_ripetuti(a: int, exp: int, n: int, printable=False) -> int:
-    binary_exp: list[int] = dec_to_bin(exp)
-    c: int = 1
+def repeated_squaring_algorithm(a, exp, n, printable=True):
+    binary_exp = dec_to_bin(exp)
+    c = 1
+    c_list = []
     for d in binary_exp:
         c = ((c**2) * (a**d)) % n
+        if c > n / 2:
+            c = c - n
+        c_list.append(c)
 
-    print(c)
+    write_solution(printable,Writer.REPEATSQR, a, exp, n, binary_exp, c_list)
+    return c
 
 def RSA(N, r, msg,printable=True):
+    # TODO: finish and add writer
     nphi = phi(N,printable)
     t , s= bezout_identity(r, nphi,printable)
     quadrati_ripetuti(msg, s, N,printable)
 
 if __name__ == "__main__":
     print("Inveribili")
-
-# TODO:
-# - crea il file test
-# - caso banale in cui uno dei due numeri è l'MCD
-# - teorema cinese del resto implementa per n equivalenze (permutazioni con N)
-# - finisci n_per_phi_uguale_a()
-# - sistema RSA
-# - quadrati_ripetuti
-# - scrivi meglio quando stampi soluzione (creare una classe apposita?)
