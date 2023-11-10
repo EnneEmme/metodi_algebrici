@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 
-def _append_value(a, b, q, r, ib=None):
-    ib = {}
-    return {"a": a, "b": b, "q": q, "r": r, "ib": ib}
+from utils import *
+from writer import write_solution, Writer
 
-
-def _unpack_values(values):
-    return values["a"], values["b"], values["q"], values["r"]
-
-
-
-def algoritmo_di_euclide(a, b, printable=True):
+def euclidean_algorithm(a, b, printable=True):
     store = {}
     numbers = [a, b]
     start = True
@@ -24,93 +17,64 @@ def algoritmo_di_euclide(a, b, printable=True):
 
         q = int(a / b)
         r = a - b * q
-        store[str(a)] = _append_value(a, b, q, r)
+        store[str(a)] = append_value(a, b, q, r)
 
         if start:
             start = False
 
         if r == 0:
-            MCD = b
+            gcd = b
             break
-    if printable:
-        print("Algoritmo di Euclide\n")
-        for value in store.keys():
-            a, b, q, r = _unpack_values(store[value])
-            if r != 0:
-                print(f"{a} = {b} • {q} + {r}")
-            else:
-                print(f"{a} = {b} • {q}")
 
-            a, b = numbers
-        print(f"\nMCD = ({a}, {b}) = {MCD}\n")
+    write_solution(printable, Writer.EUCLIDEAN, gcd, store, numbers)
 
-    return MCD, store
+    return gcd, store
 
-def identita_di_bezout(a, b, store={}, printable=True):
+def bezout_identity(a, b,printable=True,store={}):
     if store == {}:
-        _, store = algoritmo_di_euclide(a, b)
-    if a == 1:
-        return 1, 1
-    numbers = [a, b]
-    if a < b:
-        store[str(b)]["ib"]["a"] = -1 * store[str(b)]["q"]
-        store[str(b)]["ib"]["b"] = 1
-        store[str(a)]["ib"]["a"] = 1 - store[str(b)]["ib"]["a"] * store[str(a)]["q"]
-        store[str(a)]["ib"]["b"] = - store[str(b)]["ib"]["b"] * store[str(a)]["q"]
-    else:
-        store[str(a)]["ib"]["a"] = 1
-        store[str(a)]["ib"]["b"] = -1 * store[str(a)]["q"]
-        store[str(b)]["ib"]["a"] = - store[str(a)]["ib"]["a"] * store[str(b)]["q"]
-        store[str(b)]["ib"]["b"] = 1 - store[str(a)]["ib"]["b"] * store[str(b)]["q"]
+        _, store = euclidean_algorithm(a, b)
+    if a == 1: return 1, 1
 
-    precprec = str(a)
-    prec = str(b)
+    a, b = str(a), str(b)
+
+    if int(a) < int(b):
+        store[b]["ib"]["a"] = -1 * store[b]["q"]
+        store[b]["ib"]["b"] = 1
+        store[a]["ib"]["a"] = 1 - store[b]["ib"]["a"] * store[a]["q"]
+        store[a]["ib"]["b"] = - store[b]["ib"]["b"] * store[a]["q"]
+    else:
+        store[a]["ib"]["a"] = 1
+        store[a]["ib"]["b"] = -1 * store[a]["q"]
+        store[b]["ib"]["a"] = - store[a]["ib"]["a"] * store[b]["q"]
+        store[b]["ib"]["b"] = 1 - store[a]["ib"]["b"] * store[b]["q"]
+
+    precprec, prec = a, b
+
     for value in store.keys():
-        if int(value) != a and int(value) != b and store[value]["r"] > 0:
+        if value != a and value != b and store[value]["r"] > 0:
             store[value]["ib"]["a"] = (
                 store[precprec]["ib"]["a"] - store[prec]["ib"]["a"] * store[value]["q"]
             )
             store[value]["ib"]["b"] = (
                 store[precprec]["ib"]["b"] - store[prec]["ib"]["b"] * store[value]["q"]
             )
-        precprec = str(prec)
-        prec = str(value)
+        precprec, prec = prec, value
 
-    if printable:
-        print("Identità di bezout")
-    for value in store.keys():
-        if int(store[value]["r"]) > 0:
-            if a < b:
-                if printable:
-                    print(
-                        f"{store[value]['r']} = {store[value]['ib']['b']}b + {store[value]['ib']['a']}a"
-                    )
-            else:
-                if printable:
-                    print(
-                        f"{store[value]['r']} = {store[value]['ib']['a']}a + {store[value]['ib']['b']}b"
-                    )
-            prec = value
-        else:
-            if printable:
-                print(f"{store[prec]['r']} = ", end="")
-            if a < b:
-                if printable:
-                    print(f'{store[prec]["ib"]["b"]} • {b} + {store[prec]["ib"]["a"]} • {a}')
-                return store[prec]["ib"]["b"], store[prec]["ib"]["a"]
-            else:
-                if printable:
-                    print(f'{store[prec]["ib"]["a"]} • {a} + {store[prec]["ib"]["b"]} • {b}')
-                return store[prec]["ib"]["a"], store[prec]["ib"]["b"]
+    write_solution(printable, Writer.BEZOUT, store, a, b)
+
+    last_line = store[ list(store.keys())[-2]]["ib"]
+
+    if a < b: return last_line["b"], last_line["a"]
+    else:     return last_line["a"], last_line["b"]
 
 def equazione_diofantea(a, b, c, printable=True):
-    MCD, store = algoritmo_di_euclide(a, b,printable)
+    MCD, store = euclidean_algorithm(a, b,printable)
     if c % MCD != 0:
         if printable:
             print(f"{c} non e' divisibile per l'MCD di {a} e {b} ({MCD=})")
         return [-1, -1, -1, -1]
 
-    x, y = identita_di_bezout(a, b, store,printable)
+    x, y = bezout_identity(a, b,printable,store)
 
     multi = int(c / MCD)
 
@@ -135,9 +99,6 @@ def equazione_diofantea(a, b, c, printable=True):
             print(f"yk = {x0} + {-yk}k\n")
         return y0 ,x0, xk, -yk
 
-def not_valid_equation(x0, y0, xk, yk):
-    return x0 == -1 and y0 == -1 and xk == -1 and yk == -1
-
 def congruenza_lineare_modulo(a, b, n, printable=True):
     if printable:
         print("Congruenza modulo n")
@@ -153,20 +114,8 @@ def congruenza_lineare_modulo(a, b, n, printable=True):
         print(f"x = {x0} + {-yk}k")
     return x0, -yk
 
-def primi_tra_loro(a, b):
-    MCD, _ = algoritmo_di_euclide(a, b, False)
-    return MCD == 1
-
 def invertibile(n):
-    return [num for num in range(1,n) if primi_tra_loro(num,n)]
-
-def is_prime(n, printable = False):
-    for x in range(2,int(n**(1/2))):
-        if n % x == 0:
-            if printable:
-                print(x)
-            return False
-    return True
+    return [num for num in range(1,n) if is_coprime(num,n)]
 
 def phi(num,printable=True):
     factor = {}
@@ -218,29 +167,12 @@ def teorema_cinese_del_resto(b1, n1, b2, n2, b3, n3,cong_printable=False,printab
     if printable:
         print(f"minimum positive number = {c}")
 
-def divisori(n, printable = True):
-    dividers = []
-    for x in range(1,n+1):
-        if n % x == 0:
-            dividers.append(x)
-    if printable:
-        print(f"I divisori di {n} sono: {dividers}")
-    return dividers
-
-def successori_primi(divisori, printable=True):
-    result = [num+1 for num in divisori if is_prime(num+1)]
-    if printable:
-        print(f"I successori primi sono: {result}")
-    return result
 
 def n_per_phi_uguale_a(phi, printable=True):
-    dividers = divisori(phi, printable)
-    successor = successori_primi(dividers, printable)
+    dividers = dividers(phi, printable)
+    successor = prime_successor(dividers, printable)
 
     n_possible_value = []
-
-def dec_to_bin(num: int) -> list[int]:
-    return [int(n) for n in bin(num)[2:]]
 
 def quadrati_ripetuti(a: int, exp: int, n: int, printable=False) -> int:
     binary_exp: list[int] = dec_to_bin(exp)
@@ -250,18 +182,19 @@ def quadrati_ripetuti(a: int, exp: int, n: int, printable=False) -> int:
 
     print(c)
 
-
+def RSA(N, r, msg,printable=True):
+    nphi = phi(N,printable)
+    t , s= bezout_identity(r, nphi,printable)
+    quadrati_ripetuti(msg, s, N,printable)
 
 if __name__ == "__main__":
     print("Inveribili")
-    quadrati_ripetuti(4, 89, 91)
 
 # TODO:
 # - crea il file test
 # - caso banale in cui uno dei due numeri è l'MCD
-# - teorema cinese del resto implementa per n equivalenze
+# - teorema cinese del resto implementa per n equivalenze (permutazioni con N)
 # - finisci n_per_phi_uguale_a()
-# - RSA
+# - sistema RSA
 # - quadrati_ripetuti
 # - scrivi meglio quando stampi soluzione (creare una classe apposita?)
-# - creare file utils
