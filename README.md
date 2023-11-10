@@ -1,86 +1,105 @@
+## Euclidean_algorithm
 
-## Algoritmo di Euclide
-
-MCD = (a, b) = ?
+gcd = (a, b) = ?
 
 ``` python
-MCD, _ = algoritmo_di_euclide(a, b)
+gcd, _ = euclidean_algorithm(a, b)
 ```
 
-## Identità di Bezout
+## Bezout identity 
 
-MCD(a,b) = ax + by
+gcd(a,b) = ax + by
 
 x = ?, y = ?
 
 ``` python
-x, y = identita_di_bezout(a, b)
+x, y = bezout_identity(a, b)
 ```
 
-## Equazione diofantea
+## Linear Diophantine equation 
 
 ax + by = c
 
 x = ?, y = ?
 
 ``` python
-x0, y0, xk, yk = equazione_diofantea(a, b, c)
+x0, y0, xk, yk = linear_diophantine_equation((a, b, c)
 ```
-Soluzione:
+Solution:
 
 $x_k = x_0 + (b/MCD)k$ con $k \in \mathbb{Z}$
 
 $y_k = y_0 - (a/MCD)k$ con $k \in \mathbb{Z}$
 
 
-## Congruenza lineare modulo
+## Linear_congruence
 
 $ax \equiv b$ mod n
 
 ``` python
-x0, xk = congruenza_lineare_modulo(a, b, n)
+x0, xk =linear_congruence(o(a, b, n)
 ```
-Soluzione:
+Solution:
 
-$x = x_0 + x_kk$ con $k \in \mathbb{Z}$
+$x = x_0 + x_kk$ with $k \in \mathbb{Z}$
 
-## Teorema cinese del resto
+## Chinese remainder theorem
 
-$$\begin{cases}
-x \equiv b_1 \ mod \ n_1 \\ 
-x \equiv b_2 \ mod \ n_2 \\ 
-x \equiv b_3 \ mod \ n_3 \\ 
-\end{cases}$$
+$$
+
+\left\{ \begin{array}{rcl}
+x \equiv b_1 \ mod \ n_1 \\
+x \equiv b_2 \ mod \ n_2 \\
+\vdots \ \ \vdots \ \ \vdots \\
+x \equiv b_k \ mod \ n_k \\
+\end{array}\right.
+$$
 
 ``` python
-teorema_cinese_del_resto(b1, n1, b2, n2, b3, n3)
+chinese_remainder_theorem([b1...bk], [n1...nk])
 
-# se si vuole il calcolo di tutte le congruenze
-teorema_cinese_del_resto(b1, n1, b2, n2, b3, n3,  True)
+# Extended solution for all linear congruences
+chinese_remainder_theorem([b1...bk], [n1...nk], True)
 ```
+
 $$
 c = \sum_{i=1}^r N_iy_ib_i
 $$
 
-Soluzione :
+Solution :
 
 $x = c + N\mathbb{Z}$ 
 
-## Invertibili 
+## Invertible
 
 ``` python
-invertibile = invertibile(n)
+invertible = invertible(n)
 ```
-Ritorna lista degli invertibili della classe di equivalenza n
+Returns a list of invertibles Returns of the equivalence class n
 
-## Funzione di Eulero
+## Euler's totient function
 $\varphi(1) = 1,$
 
-$\varphi(n)=|{k \in\mathbb{Z} : 1 \leq k \leq n−1, (k,n)=1}|,per n \geq 2$
+$\varphi(n)=|{k \in\mathbb{Z} : 1 \leq k \leq n−1, (k,n)=1}|,for n \geq 2$
 
 ``` python
 phi = phi(n)
 ```
 
-TODO: da implementare
-phi(n) = k con k conosciuto trovare n
+## Repeated squaring algorithm
+
+$a^{exp}$ mod n
+
+``` python
+b = repeated_squaring_algorithm(a, exp, n) 
+```
+Solution:
+
+$a^{exp}$ b mod n
+
+# adjust errors
+
+- [X] linear_congruence(156, 22, 548)
+- [ ] linear_congruence(170, 30, 15)
+- [ ] linear_congruence(170, 30, 17)
+- [ ] chinese_remainder_theorem([4,2,5,4], [2, 13,5, 13])
