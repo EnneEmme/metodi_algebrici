@@ -45,15 +45,13 @@ $x = x_0 + x_kk$ with $k \in \mathbb{Z}$
 
 ## Chinese remainder theorem
 
-$$
+$$\begin{cases}
+ x \equiv b_1 \ mod \ n_1 \\ 
+ x \equiv b_2 \ mod \ n_2 \\ 
+... \ ... \ ... \ ...   \\
+x \equiv b_k \ mod \ n_k \\ 
+\end{cases}$$
 
-\left\{ \begin{array}{rcl}
-x \equiv b_1 \ mod \ n_1 \\
-x \equiv b_2 \ mod \ n_2 \\
-\vdots \ \ \vdots \ \ \vdots \\
-x \equiv b_k \ mod \ n_k \\
-\end{array}\right.
-$$
 
 ``` python
 chinese_remainder_theorem([b1...bk], [n1...nk])
