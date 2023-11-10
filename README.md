@@ -93,7 +93,7 @@ b = repeated_squaring_algorithm(a, exp, n)
 ```
 Solution:
 
-$a^{exp}$ b mod n
+$a^{exp} \equiv$ b mod n
 
 # adjust errors
 
