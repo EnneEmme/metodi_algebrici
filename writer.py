@@ -92,7 +92,7 @@ def write_repeated_squaring_algorithm( a, exp, n, binary_exp, c_list):
     print("Repeated squaring alogrithm\n")
     print("c0 = 1")
     for i,d in enumerate(binary_exp,start=1):
-        print(f"c{i} = {c_list[i-1]}^2 * {a}^{d} mod {n}")
+        print(f"c{i} = {c_list[i-1]}^2 * {a}^{d} mod {n} = {c_list[i]} mod {n}")
 
     print(f"{a}^{exp} cong {c_list[-1]} mod {n}")
 

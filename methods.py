@@ -165,12 +165,16 @@ def n_for_phi_equal_to(phi, printable=True):
     dividers = dividers(phi, printable)
     successor = prime_successor(dividers, printable)
 
-    n_possible_value = []
+    possible_value = {}
+    for prime in prime_successor[::-1]:
+        pass
+
 
 def repeated_squaring_algorithm(a, exp, n, printable=True):
     binary_exp = dec_to_bin(exp)
     c = 1
     c_list = []
+    c_list.append(c)
     for d in binary_exp:
         c = ((c**2) * (a**d)) % n
         if c > n / 2:
@@ -184,7 +188,7 @@ def RSA(N, r, msg,printable=True):
     # TODO: finish and add writer
     nphi = phi(N,printable)
     t , s= bezout_identity(r, nphi,printable)
-    quadrati_ripetuti(msg, s, N,printable)
+    repeated_squaring_algorithm(msg, s, N,printable)
 
 if __name__ == "__main__":
     print("Inveribili")
